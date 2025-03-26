@@ -525,11 +525,11 @@ class GoogleDriveIndexer:
 
         # Check if index exists, create if not
         available_indexes = pc.list_indexes().names()
-        if self.config.PINECONE_INDEX_NAME not in available_indexes:
-            self.logger.info(f"Index '{self.config.PINECONE_INDEX_NAME}' not found. Creating a new index...")
+        if self.config.PINECONE_INDEX not in available_indexes:
+            self.logger.info(f"Index '{self.config.PINECONE_INDEX}' not found. Creating a new index...")
 
             pc.create_index(
-                name=self.config.PINECONE_INDEX_NAME,
+                name=self.config.PINECONE_INDEX,
                 dimension=embedding_dim,
                 metric='cosine',
                 spec=ServerlessSpec(
@@ -537,7 +537,7 @@ class GoogleDriveIndexer:
                     region=self.config.PINECONE_REGION
                 )
             )
-            self.logger.info(f"Index '{self.config.PINECONE_INDEX_NAME}' created successfully.")
+            self.logger.info(f"Index '{self.config.PINECONE_INDEX}' created successfully.")
 
         # Create loader for the records
         loader = CustomJsonLoader(
@@ -582,12 +582,12 @@ class GoogleDriveIndexer:
             self.logger.info("Uploading documents to Pinecone...")
             vectorstore = PineconeVectorStore.from_documents(
                 docs,
-                index_name=self.config.PINECONE_INDEX_NAME,
+                index_name=self.config.PINECONE_INDEX,
                 pinecone_api_key=self.config.PINECONE_API_KEY,
                 embedding=embeddings
             )
             self.logger.info(
-                f"Successfully indexed {len(docs)} document chunks to Pinecone index '{self.config.PINECONE_INDEX_NAME}'.")
+                f"Successfully indexed {len(docs)} document chunks to Pinecone index '{self.config.PINECONE_INDEX}'.")
             return True
         except Exception as e:
             self.logger.error(f"Error indexing to Pinecone: {str(e)}")
